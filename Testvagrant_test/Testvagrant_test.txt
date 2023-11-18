@@ -1,0 +1,55 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Product {
+    string name;
+    int unitPrice;
+    int gst;
+    int quantity;
+};
+
+void printBasket(const vector<Product>& basket) {
+    for (const auto& product : basket) {
+        cout << "Product: " << product.name
+             << ", Unit Price (Rs): " << product.unitPrice
+             << ", GST (%): " << product.gst
+             << ", Quantity: " << product.quantity << endl;
+    }
+}
+
+Product findProductWithMaxGST(const vector<Product>& basket) {
+    return *max_element(basket.begin(), basket.end(), [](const Product& a, const Product& b) {
+        return (a.unitPrice * a.gst / 100) < (b.unitPrice * b.gst / 100);
+    });
+}
+
+int main() {
+    vector<Product> basket = {
+        {"Leather wallet", 1100, 18, 1},
+        {"Umbrella", 900, 12, 4},
+        {"Cigarette", 200, 28, 3},
+        {"Honey", 100, 0, 2}
+    };
+
+    Product maxGSTProduct = findProductWithMaxGST(basket);
+    cout << "Product with maximum GST amount: " << maxGSTProduct.name << endl;
+
+    double totalAmount = 0;
+    for (const auto& product : basket) {
+        int price = product.unitPrice * product.quantity;
+        double gstAmount = price * (product.gst / 100.0);
+
+        if (product.unitPrice >= 500) {
+            price -= (price * 0.05);
+        }
+
+        totalAmount += price + gstAmount;
+    }
+
+    cout << "Total amount to be paid to the shopkeeper: Rs. " << totalAmount << endl;
+
+    return 0;
+}
